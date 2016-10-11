@@ -1,26 +1,21 @@
 ---
-title: 'Automating Data-analysis Pipelines'
-author: 'Shaun Jackman'
-date: '2014-11-03'
+title: Automating Data Analysis Pipelines
+author: Shaun Jackman
+date: 2016-10-11
 ---
 
-Automating Data-analysis Pipelines
+Automating Data Analysis Pipelines
 ------------------------------------------------------------
 
-| UBC [STAT 545A][]/STAT 547M
-| 2014-11-03
 | [Shaun Jackman][sjackman.ca] [\@sjackman][]
-| [Jenny Bryan][] [\@JennyBryan][]
 | [![Creative Commons Attribution License](images/cc-by.png)][cc-by]
 
 [STAT 545A]: http://stat545-ubc.github.io/
 [sjackman.ca]: http://sjackman.ca
 [\@sjackman]: http://twitter.com/sjackman
-[Jenny Bryan]: http://www.stat.ubc.ca/~jenny/
-[\@JennyBryan]: https://twitter.com/JennyBryan
 [cc-by]: http://creativecommons.org/licenses/by/4.0/
 
-Pipelines Automation Dependencies
+Automation and Pipelines
 ================================================================================
 
 Automation
@@ -205,7 +200,7 @@ Both scripts and data files are shown.
 
 + Only dependencies between scripts are shown.
 + Data files are not shown.
-+ Run the scripts in *topographical* order.
++ Run the scripts in *topological* order.
 
 | [![STAT 540 Differential Methylation in Leukemia](images/stat540diffmethleuk.png)][stat540diffmethleuk]
 | *STAT 540 Differential Methylation in Leukemia*
