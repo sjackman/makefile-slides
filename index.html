@@ -4,31 +4,49 @@
   <meta charset="utf-8">
   <meta name="generator" content="pandoc">
   <meta name="author" content="Shaun Jackman" />
-  <meta name="dcterms.date" content="2014-11-03" />
-  <title>Automating Data-analysis Pipelines</title>
+  <meta name="dcterms.date" content="2016-10-11" />
+  <title>Automating Data Analysis Pipelines</title>
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <link rel="stylesheet" href="reveal.js/css/reveal.min.css"/>
     <style type="text/css">code{white-space: pre;}</style>
     <style type="text/css">
+div.sourceCode { overflow-x: auto; }
 table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
   margin: 0; padding: 0; vertical-align: baseline; border: none; }
 table.sourceCode { width: 100%; line-height: 100%; }
 td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
 td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; }
-code > span.dt { color: #902000; }
-code > span.dv { color: #40a070; }
-code > span.bn { color: #40a070; }
-code > span.fl { color: #40a070; }
-code > span.ch { color: #4070a0; }
-code > span.st { color: #4070a0; }
-code > span.co { color: #60a0b0; font-style: italic; }
-code > span.ot { color: #007020; }
-code > span.al { color: #ff0000; font-weight: bold; }
-code > span.fu { color: #06287e; }
-code > span.er { color: #ff0000; font-weight: bold; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
     </style>
     <link rel="stylesheet" href="reveal.js/css/theme/simple.css" id="theme">
     <style type="text/css">.reveal pre{font-size: 0.7em;}</style>
@@ -52,10 +70,11 @@ code > span.er { color: #ff0000; font-weight: bold; }
 
 
 <section id="automating-data-analysis-pipelines" class="slide level2">
-<h1>Automating Data-analysis Pipelines</h1>
-<p>UBC <a href="http://stat545-ubc.github.io/">STAT 545A</a>/STAT 547M<br />2014-11-03<br /><a href="http://sjackman.ca">Shaun Jackman</a> <a href="http://twitter.com/sjackman">@sjackman</a><br /><a href="http://www.stat.ubc.ca/~jenny/">Jenny Bryan</a> <a href="https://twitter.com/JennyBryan">@JennyBryan</a><br /><a href="http://creativecommons.org/licenses/by/4.0/"><img src="images/cc-by.png" alt="Creative Commons Attribution License" /></a></p>
+<h1>Automating Data Analysis Pipelines</h1>
+<p><a href="http://sjackman.ca">Shaun Jackman</a> <a href="http://twitter.com/sjackman">@sjackman</a><br />
+<a href="http://creativecommons.org/licenses/by/4.0/"><img src="images/cc-by.png" alt="Creative Commons Attribution License" /></a></p>
 </section>
-<section><section id="pipelines-automation-dependencies" class="titleslide slide level1"><h1>Pipelines Automation Dependencies</h1></section><section id="automation" class="slide level2">
+<section><section id="automation-and-pipelines" class="titleslide slide level1"><h1>Automation and Pipelines</h1></section><section id="automation" class="slide level2">
 <h1>Automation</h1>
 <ul>
 <li>using <a href="http://tryr.codeschool.com/">R</a></li>
@@ -72,25 +91,33 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <p>breaks up a monolithic make-all-the-things script into discrete, manageable chunks.</p>
 </section><section id="each-stage-of-the-pipeline" class="slide level2">
 <h1>Each stage of the pipeline</h1>
-<p>… defines its input and its outputs.<br />… does <em>not</em> modify its inputs, so it is <em>idempotent</em>.</p>
-<p>Rerunning a stage of the pipeline<br />produces the same results as the previous run.</p>
+<p>… defines its input and its outputs.<br />
+… does <em>not</em> modify its inputs, so it is <em>idempotent</em>.</p>
+<p>Rerunning a stage of the pipeline<br />
+produces the same results as the previous run.</p>
 </section><section id="advantage-1" class="slide level2">
 <h1>Advantage #1</h1>
-<p>When you modify one stage of the pipeline,<br />you don't have to rerun the entire pipeline.</p>
+<p>When you modify one stage of the pipeline,<br />
+you don't have to rerun the entire pipeline.</p>
 <p>You only rerun the downstream, dependent stages.</p>
 </section><section id="advantage-2" class="slide level2">
 <h1>Advantage #2</h1>
 <p>Divide up work amongst a group by assigning to each person stages of the pipeline design.</p>
 </section><section id="advantage-3" class="slide level2">
 <h1>Advantage #3</h1>
-<p>You can draw pretty pictures of your pipeline,<br />because a pipeline is a graph.</p>
+<p>You can draw pretty pictures of your pipeline,<br />
+because a pipeline is a graph.</p>
 </section><section class="slide level2">
 
-<p><a href="images/pipeline.gv"><img src="images/pipeline.png" alt="01_justR" /></a><br /><a href="01_justR"><em>01_justR</em></a></p>
+<p><a href="images/pipeline.gv"><img src="images/pipeline.png" alt="01_justR" /></a><br />
+<a href="01_justR"><em>01_justR</em></a></p>
 </section></section>
 <section><section id="automation-1" class="titleslide slide level1"><h1>Automation</h1></section><section id="automate-a-pipeline" class="slide level2">
 <h1>Automate a pipeline</h1>
-<p>… to reproduce previous results.<br />… to recreate results deleted by fat fingers.<br />… to rerun the pipeline with updated software.<br />… to run the same pipeline on a new data set.</p>
+<p>… to reproduce previous results.<br />
+… to recreate results deleted by fat fingers.<br />
+… to rerun the pipeline with updated software.<br />
+… to run the same pipeline on a new data set.</p>
 </section><section id="tools" class="slide level2">
 <h1>Tools</h1>
 <ul>
@@ -100,10 +127,10 @@ code > span.er { color: #ff0000; font-weight: bold; }
 </ul>
 </section><section id="r" class="slide level2">
 <h1>R</h1>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co">#!/usr/bin/env Rscript</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#!/usr/bin/env Rscript</span>
 <span class="kw">source</span>(<span class="st">&quot;00_downloadData.R&quot;</span>)
 <span class="kw">source</span>(<span class="st">&quot;01_filterReorder.R&quot;</span>)
-<span class="kw">source</span>(<span class="st">&quot;02_aggregatePlot.R&quot;</span>)</code></pre>
+<span class="kw">source</span>(<span class="st">&quot;02_aggregatePlot.R&quot;</span>)</code></pre></div>
 <div class="fragment">
 <ul>
 <li>Shows in what order to run the scripts.</li>
@@ -112,11 +139,11 @@ code > span.er { color: #ff0000; font-weight: bold; }
 </div>
 </section><section id="shell-and-rscript" class="slide level2">
 <h1>Shell and Rscript</h1>
-<pre class="sourceCode bash"><code class="sourceCode bash"><span class="co">#!/bin/sh</span>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="co">#!/bin/sh</span>
 <span class="kw">set</span> <span class="kw">-eux</span>
 <span class="kw">Rscript</span> 00_downloadData.R
 <span class="kw">Rscript</span> 01_filterReorder.R
-<span class="kw">Rscript</span> 02_aggregatePlot.R</code></pre>
+<span class="kw">Rscript</span> 02_aggregatePlot.R</code></pre></div>
 <div class="fragment">
 <p>Allows you to easily run your pipeline from the shell.</p>
 </div>
@@ -124,40 +151,40 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <table>
 <thead>
 <tr class="header">
-<th style="text-align: left;">Option</th>
-<th style="text-align: left;">Effect</th>
+<th>Option</th>
+<th>Effect</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;"><code>set -e</code></td>
-<td style="text-align: left;">Stop at the first error</td>
+<td><code>set -e</code></td>
+<td>Stop at the first error</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"><code>set -u</code></td>
-<td style="text-align: left;">Undefined variables are an error</td>
+<td><code>set -u</code></td>
+<td>Undefined variables are an error</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;"><code>set -x</code></td>
-<td style="text-align: left;">Print each command as it is run</td>
+<td><code>set -x</code></td>
+<td>Print each command as it is run</td>
 </tr>
 </tbody>
 </table>
 </div>
 </section><section id="mix-r-scripts-with-other-tools" class="slide level2">
 <h1>Mix R scripts with other tools</h1>
-<pre class="sourceCode bash"><code class="sourceCode bash"><span class="co">#!/bin/sh</span>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="co">#!/bin/sh</span>
 <span class="kw">set</span> <span class="kw">-eux</span>
 <span class="kw">curl</span> -L http://bit.ly/lotr_raw-tsv <span class="kw">&gt;</span>lotr_raw.tsv
 <span class="kw">Rscript</span> 01_filterReorder.R
-<span class="kw">Rscript</span> 02_aggregatePlot.R</code></pre>
+<span class="kw">Rscript</span> 02_aggregatePlot.R</code></pre></div>
 <div class="fragment">
 <p>R is a good tool, but not always the best tool for the job.</p>
 <p>Not sacrilege, but the principal tenet of a polyglot.</p>
 </div>
 </section><section id="makefile" class="slide level2">
 <h1>Makefile</h1>
-<pre class="sourceCode makefile"><code class="sourceCode makefile"><span class="co">#!/usr/bin/make -f</span>
+<div class="sourceCode"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span class="co">#!/usr/bin/make -f</span>
 
 <span class="dv">lotr_raw.tsv:</span>
 	curl -L http://bit.ly/lotr_raw-tsv &gt;lotr_raw.tsv
@@ -166,15 +193,18 @@ code > span.er { color: #ff0000; font-weight: bold; }
 	Rscript 01_filterReorder.R
 
 <span class="dv">totalWordsByFilmRace.tsv:</span><span class="dt"> 02_aggregatePlot.R lotr_clean.tsv</span>
-	Rscript 02_aggregatePlot.R</code></pre>
+	Rscript 02_aggregatePlot.R</code></pre></div>
 <div class="fragment">
-<p>A Makefile gives both the commands<br /><em>and their dependencies</em>.</p>
+<p>A Makefile gives both the commands<br />
+<em>and their dependencies</em>.</p>
 </div>
 </section><section id="make-is-beautiful" class="slide level2">
 <h1>Make is beautiful</h1>
-<p>Tell Make how to create one type of file from another<br />and which files you want to create.</p>
+<p>Tell Make how to create one type of file from another<br />
+and which files you want to create.</p>
 <div class="fragment">
-<p>Make looks at which files you have<br />and figures out how to create the files that you want.</p>
+<p>Make looks at which files you have<br />
+and figures out how to create the files that you want.</p>
 </div>
 </section></section>
 <section><section id="dependency-graph" class="titleslide slide level1"><h1>Dependency graph</h1></section><section id="a-pipeline-is-a-graph" class="slide level2">
@@ -184,15 +214,17 @@ code > span.er { color: #ff0000; font-weight: bold; }
 </section><section class="slide level2">
 
 <p>Both scripts and data files are shown.</p>
-<p><a href="images/pipeline.gv"><img src="images/pipeline.png" alt="01_justR" /></a><br /><a href="01_justR"><em>01_justR</em></a></p>
+<p><a href="images/pipeline.gv"><img src="images/pipeline.png" alt="01_justR" /></a><br />
+<a href="01_justR"><em>01_justR</em></a></p>
 </section><section class="slide level2">
 
 <ul>
 <li>Only dependencies between scripts are shown.</li>
 <li>Data files are not shown.</li>
-<li>Run the scripts in <em>topographical</em> order.</li>
+<li>Run the scripts in <em>topological</em> order.</li>
 </ul>
-<p><a href="https://sites.google.com/site/stat540diffmethleuk/code"><img src="images/stat540diffmethleuk.png" alt="STAT 540 Differential Methylation in Leukemia" /></a><br /><em>STAT 540 Differential Methylation in Leukemia</em></p>
+<p><a href="https://sites.google.com/site/stat540diffmethleuk/code"><img src="images/stat540diffmethleuk.png" alt="STAT 540 Differential Methylation in Leukemia" /></a><br />
+<em>STAT 540 Differential Methylation in Leukemia</em></p>
 </section><section id="order-of-dependencies" class="slide level2">
 <h1>Order of dependencies</h1>
 <p>A shell script gives <em>one</em> order in which you can successfully run the pipeline.</p>
@@ -235,13 +267,13 @@ code > span.er { color: #ff0000; font-weight: bold; }
 </section><section id="markdown-for-the-manuscript" class="slide level2">
 <h1>Markdown for the manuscript</h1>
 <p><a href="https://help.github.com/articles/markdown-basics/">Markdown</a> is a plain-text typesetting language</p>
-<pre class="sourceCode markdown"><code class="sourceCode markdown">A header
+<div class="sourceCode"><pre class="sourceCode markdown"><code class="sourceCode markdown">A header
 ========
 
 A list:
 
 + <span class="fl">This text is *italic*</span>
-<span class="fl">+ This text is **bold**</span></code></pre>
+<span class="fl">+ This text is **bold**</span></code></pre></div>
 <h3 id="a-header">A header</h3>
 <p>A list:</p>
 <ul>
@@ -275,7 +307,7 @@ The sum of 1 + 1 is calculated as follows.
 </section><section id="the-sum-of-1-1" class="slide level2">
 <h1>The Sum of 1 + 1</h1>
 <p>The sum of 1 + 1 is calculated as follows.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="dv">1</span> +<span class="st"> </span><span class="dv">1</span></code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="dv">1</span> +<span class="st"> </span><span class="dv">1</span></code></pre></div>
 <pre><code>## [1] 2</code></pre>
 <figure>
 <img src="article/figure.png" alt="Fig. 1: A graphical view of 1 + 1" /><figcaption><em>Fig. 1</em>: A graphical view of 1 + 1</figcaption>
@@ -286,7 +318,7 @@ The sum of 1 + 1 is calculated as follows.
 <p>Dependencies of <a href="article/Makefile"><em>article/Makefile</em></a></p>
 </section><section id="render-html" class="slide level2">
 <h1>Render HTML</h1>
-<pre class="sourceCode makefile"><code class="sourceCode makefile"><span class="dv">%.md:</span><span class="dt"> %.Rmd</span>
+<div class="sourceCode"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span class="dv">%.md:</span><span class="dt"> %.Rmd</span>
 	Rscript -e <span class="st">&#39;knitr::knit(&quot;</span><span class="ch">$&lt;</span><span class="st">&quot;, &quot;</span><span class="ch">$@</span><span class="st">&quot;)&#39;</span>
 
 <span class="dv">%.html:</span><span class="dt"> %.md</span>
@@ -298,13 +330,13 @@ The sum of 1 + 1 is calculated as follows.
 <span class="dv">article.html:</span><span class="dt"> figure.png</span>
 
 <span class="dv">%.png:</span><span class="dt"> %.gv</span>
-	dot -Tpng <span class="ch">$&lt;</span> &gt;<span class="ch">$@</span></code></pre>
-<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">make</span> article.html</code></pre>
-<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">dot</span> -Tpng figure.gv <span class="kw">&gt;</span>figure.png
-<span class="kw">Rscript</span> -e <span class="st">&#39;rmarkdown::render(&quot;article.Rmd&quot;)&#39;</span></code></pre>
+	dot -Tpng <span class="ch">$&lt;</span> &gt;<span class="ch">$@</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">make</span> article.html</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">dot</span> -Tpng figure.gv <span class="kw">&gt;</span>figure.png
+<span class="kw">Rscript</span> -e <span class="st">&#39;rmarkdown::render(&quot;article.Rmd&quot;)&#39;</span></code></pre></div>
 </section><section id="knit-markdown" class="slide level2">
 <h1>Knit Markdown</h1>
-<pre class="sourceCode makefile"><code class="sourceCode makefile"><span class="dv">%.md:</span><span class="dt"> %.Rmd</span>
+<div class="sourceCode"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span class="dv">%.md:</span><span class="dt"> %.Rmd</span>
 	Rscript -e <span class="st">&#39;knitr::knit(&quot;</span><span class="ch">$&lt;</span><span class="st">&quot;, &quot;</span><span class="ch">$@</span><span class="st">&quot;)&#39;</span>
 
 <span class="dv">%.html:</span><span class="dt"> %.md</span>
@@ -316,14 +348,15 @@ The sum of 1 + 1 is calculated as follows.
 <span class="dv">article.html:</span><span class="dt"> figure.png</span>
 
 <span class="dv">%.png:</span><span class="dt"> %.gv</span>
-	dot -Tpng <span class="ch">$&lt;</span> &gt;<span class="ch">$@</span></code></pre>
-<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">make</span> article.md article.html</code></pre>
-<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">Rscript</span> -e <span class="st">&#39;knitr::knit(&quot;article.Rmd&quot;, &quot;article.md&quot;)&#39;</span>
+	dot -Tpng <span class="ch">$&lt;</span> &gt;<span class="ch">$@</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">make</span> article.md article.html</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">Rscript</span> -e <span class="st">&#39;knitr::knit(&quot;article.Rmd&quot;, &quot;article.md&quot;)&#39;</span>
 <span class="kw">dot</span> -Tpng figure.gv <span class="kw">&gt;</span>figure.png
-<span class="kw">pandoc</span> -s -o article.html article.md</code></pre>
+<span class="kw">pandoc</span> -s -o article.html article.md</code></pre></div>
 </section><section id="pandoc" class="slide level2">
 <h1>Pandoc</h1>
-<p><a href="http://johnmacfarlane.net/pandoc/">Pandoc</a> renders attractive documents and slides<br />from plain-text typesetting formats</p>
+<p><a href="http://johnmacfarlane.net/pandoc/">Pandoc</a> renders attractive documents and slides<br />
+from plain-text typesetting formats</p>
 <p>It converts between every format known (just about)</p>
 <ul>
 <li>Markdown</li>
@@ -335,40 +368,40 @@ The sum of 1 + 1 is calculated as follows.
 </section></section>
 <section><section id="evolving-a-makefile" class="titleslide slide level1"><h1>Evolving a Makefile</h1></section><section class="slide level2">
 
-<pre class="sourceCode bash"><code class="sourceCode bash"><span class="co">#!/bin/sh</span>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="co">#!/bin/sh</span>
 <span class="kw">set</span> <span class="kw">-eux</span>
 <span class="kw">dot</span> -Tpng -o figure.png figure.gv
 <span class="kw">Rscript</span> -e <span class="st">&#39;knitr::knit(&quot;article.Rmd&quot;)&#39;</span>
-<span class="kw">pandoc</span> -s -o article.html article.md</code></pre>
+<span class="kw">pandoc</span> -s -o article.html article.md</code></pre></div>
 <p>Shell script</p>
 </section><section class="slide level2">
 
-<pre class="sourceCode makefile"><code class="sourceCode makefile"><span class="dv">all:</span>
+<div class="sourceCode"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span class="dv">all:</span>
 	dot -Tpng -o figure.png figure.gv
 	Rscript -e <span class="st">&#39;knitr::knit(&quot;article.Rmd&quot;)&#39;</span>
-	pandoc -s -o article.html article.md</code></pre>
+	pandoc -s -o article.html article.md</code></pre></div>
 <p>First Makefile</p>
 </section><section class="slide level2">
 
-<pre class="sourceCode makefile"><code class="sourceCode makefile"><span class="dv">all:</span><span class="dt"> article.html</span>
+<div class="sourceCode"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span class="dv">all:</span><span class="dt"> article.html</span>
 
 <span class="dv">article.html:</span>
 	dot -Tpng -o figure.png figure.gv
 	Rscript -e <span class="st">&#39;knitr::knit(&quot;article.Rmd&quot;)&#39;</span>
-	pandoc -s -o article.html article.md</code></pre>
+	pandoc -s -o article.html article.md</code></pre></div>
 <p>Add a rule to build <code>article.html</code></p>
 </section><section class="slide level2">
 
-<pre class="sourceCode makefile"><code class="sourceCode makefile"><span class="dv">all:</span><span class="dt"> article.html</span>
+<div class="sourceCode"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span class="dv">all:</span><span class="dt"> article.html</span>
 
 <span class="dv">article.html:</span><span class="dt"> article.Rmd</span>
 	dot -Tpng -o figure.png figure.gv
 	Rscript -e <span class="st">&#39;knitr::knit(&quot;article.Rmd&quot;)&#39;</span>
-	pandoc -s -o article.html article.md</code></pre>
+	pandoc -s -o article.html article.md</code></pre></div>
 <p><code>article.html</code> depends on <code>article.Rmd</code></p>
 </section><section class="slide level2">
 
-<pre class="sourceCode makefile"><code class="sourceCode makefile"><span class="dv">all:</span><span class="dt"> article.html</span>
+<div class="sourceCode"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span class="dv">all:</span><span class="dt"> article.html</span>
 
 <span class="dv">figure.png:</span><span class="dt"> figure.gv</span>
 	dot -Tpng -o figure.png figure.gv
@@ -377,11 +410,11 @@ The sum of 1 + 1 is calculated as follows.
 	Rscript -e <span class="st">&#39;knitr::knit(&quot;article.Rmd&quot;)&#39;</span>
 
 <span class="dv">article.html:</span><span class="dt"> article.md figure.png</span>
-	pandoc -s -o article.html article.md</code></pre>
+	pandoc -s -o article.html article.md</code></pre></div>
 <p>Split one rule into three</p>
 </section><section class="slide level2">
 
-<pre class="sourceCode makefile"><code class="sourceCode makefile"><span class="dv">all:</span><span class="dt"> article.html</span>
+<div class="sourceCode"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span class="dv">all:</span><span class="dt"> article.html</span>
 
 <span class="dv">figure.png:</span><span class="dt"> figure.gv</span>
 	dot -Tpng -o <span class="ch">$@</span> <span class="ch">$&lt;</span>
@@ -390,11 +423,11 @@ The sum of 1 + 1 is calculated as follows.
 	Rscript -e <span class="st">&#39;knitr::knit(&quot;</span><span class="ch">$&lt;</span><span class="st">&quot;, &quot;</span><span class="ch">$@</span><span class="st">&quot;)&#39;</span>
 
 <span class="dv">article.html:</span><span class="dt"> article.md figure.png</span>
-	pandoc -s -o <span class="ch">$@</span> <span class="ch">$&lt;</span></code></pre>
+	pandoc -s -o <span class="ch">$@</span> <span class="ch">$&lt;</span></code></pre></div>
 <p>Use the variables <code>$&lt;</code> and <code>$@</code> for the input and output file</p>
 </section><section class="slide level2">
 
-<pre class="sourceCode makefile"><code class="sourceCode makefile"><span class="dv">all:</span><span class="dt"> article.html</span>
+<div class="sourceCode"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span class="dv">all:</span><span class="dt"> article.html</span>
 
 <span class="dv">%.png:</span><span class="dt"> %.gv</span>
 	dot -Tpng -o <span class="ch">$@</span> <span class="ch">$&lt;</span>
@@ -403,11 +436,11 @@ The sum of 1 + 1 is calculated as follows.
 	Rscript -e <span class="st">&#39;knitr::knit(&quot;</span><span class="ch">$&lt;</span><span class="st">&quot;, &quot;</span><span class="ch">$@</span><span class="st">&quot;)&#39;</span>
 
 <span class="dv">article.html:</span><span class="dt"> article.md figure.png</span>
-	pandoc -s -o <span class="ch">$@</span> <span class="ch">$&lt;</span></code></pre>
+	pandoc -s -o <span class="ch">$@</span> <span class="ch">$&lt;</span></code></pre></div>
 <p>Use pattern rules. The <code>%</code> matches any string</p>
 </section><section class="slide level2">
 
-<pre class="sourceCode makefile"><code class="sourceCode makefile"><span class="dv">all:</span><span class="dt"> article.html</span>
+<div class="sourceCode"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span class="dv">all:</span><span class="dt"> article.html</span>
 
 <span class="dv">%.png:</span><span class="dt"> %.gv</span>
 	dot -Tpng -o <span class="ch">$@</span> <span class="ch">$&lt;</span>
@@ -418,11 +451,11 @@ The sum of 1 + 1 is calculated as follows.
 <span class="dv">%.html:</span><span class="dt"> %.md</span>
 	pandoc -s -o <span class="ch">$@</span> <span class="ch">$&lt;</span>
 
-<span class="dv">article.html:</span><span class="dt"> figure.png</span></code></pre>
+<span class="dv">article.html:</span><span class="dt"> figure.png</span></code></pre></div>
 <p><code>article.html</code> also depends on <code>figure.png</code></p>
 </section><section class="slide level2">
 
-<pre class="sourceCode makefile"><code class="sourceCode makefile"><span class="dv">all:</span><span class="dt"> article.html</span>
+<div class="sourceCode"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span class="dv">all:</span><span class="dt"> article.html</span>
 
 <span class="dv">clean:</span>
 	rm -f article.md article.html figure.png
@@ -436,11 +469,11 @@ The sum of 1 + 1 is calculated as follows.
 <span class="dv">%.html:</span><span class="dt"> %.md</span>
 	pandoc -s -o <span class="ch">$@</span> <span class="ch">$&lt;</span>
 
-<span class="dv">article.html:</span><span class="dt"> figure.png</span></code></pre>
+<span class="dv">article.html:</span><span class="dt"> figure.png</span></code></pre></div>
 <p>Add the target named <code>clean</code></p>
 </section><section class="slide level2">
 
-<pre class="sourceCode makefile"><code class="sourceCode makefile"><span class="dv">all:</span><span class="dt"> article.html</span>
+<div class="sourceCode"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span class="dv">all:</span><span class="dt"> article.html</span>
 
 <span class="dv">clean:</span>
 	rm -f article.md article.html figure.png
@@ -458,11 +491,11 @@ The sum of 1 + 1 is calculated as follows.
 <span class="dv">%.html:</span><span class="dt"> %.md</span>
 	pandoc -s -o <span class="ch">$@</span> <span class="ch">$&lt;</span>
 
-<span class="dv">article.html:</span><span class="dt"> figure.png</span></code></pre>
+<span class="dv">article.html:</span><span class="dt"> figure.png</span></code></pre></div>
 <p>Add <code>.PHONY</code>, <code>.DELETE_ON_ERROR</code> and <code>.SECONDARY</code></p>
 </section><section class="slide level2">
 
-<pre class="sourceCode makefile"><code class="sourceCode makefile"><span class="dv">all:</span><span class="dt"> article.html</span>
+<div class="sourceCode"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span class="dv">all:</span><span class="dt"> article.html</span>
 
 <span class="dv">clean:</span>
 	rm -f article.md article.html figure.png
@@ -484,15 +517,23 @@ The sum of 1 + 1 is calculated as follows.
 	pandoc -s -o <span class="ch">$@</span> <span class="ch">$&lt;</span>
 
 <span class="co"># Dependencies on figures</span>
-<span class="dv">article.html:</span><span class="dt"> figure.png</span></code></pre>
+<span class="dv">article.html:</span><span class="dt"> figure.png</span></code></pre></div>
 </section></section>
 <section><section id="fin" class="titleslide slide level1"><h1>fin</h1></section><section id="links" class="slide level2">
 <h1>Links</h1>
-<p><a href="http://stat545-ubc.github.io/">STAT 545A</a> | <a href="http://xkcd.com/1319/">xkcd automation</a><br /><a href="http://tryr.codeschool.com/">R</a> | <a href="https://stat.ethz.ch/R-manual/R-devel/library/utils/html/Rscript.html">Rscript</a> | <a href="http://en.wikipedia.org/wiki/Shell_script">shell</a> | <a href="http://en.wikipedia.org/wiki/Make_(software)">make</a><br /><a href="https://help.github.com/articles/markdown-basics/">Markdown</a> | <a href="http://rmarkdown.rstudio.com/">RMarkdown</a> | <a href="http://johnmacfarlane.net/pandoc/">Pandoc</a> | <a href="http://ggplot2.org/">ggplot2</a><br /><a href="http://kieranhealy.org/blog/archives/2014/01/23/plain-text/">Plain Text, Papers, Pandoc</a><br /><a href="https://sites.google.com/site/stat540diffmethleuk/code">STAT 540 Differential Methylation in Leukemia</a></p>
+<p><a href="http://stat545-ubc.github.io/">STAT 545A</a> | <a href="http://xkcd.com/1319/">xkcd automation</a><br />
+<a href="http://tryr.codeschool.com/">R</a> | <a href="https://stat.ethz.ch/R-manual/R-devel/library/utils/html/Rscript.html">Rscript</a> | <a href="http://en.wikipedia.org/wiki/Shell_script">shell</a> | <a href="http://en.wikipedia.org/wiki/Make_(software)">make</a><br />
+<a href="https://help.github.com/articles/markdown-basics/">Markdown</a> | <a href="http://rmarkdown.rstudio.com/">RMarkdown</a> | <a href="http://johnmacfarlane.net/pandoc/">Pandoc</a> | <a href="http://ggplot2.org/">ggplot2</a><br />
+<a href="http://kieranhealy.org/blog/archives/2014/01/23/plain-text/">Plain Text, Papers, Pandoc</a><br />
+<a href="https://sites.google.com/site/stat540diffmethleuk/code">STAT 540 Differential Methylation in Leukemia</a></p>
 <p><a href="http://twitter.com/sjackman">@sjackman</a> | <a href="https://github.com/sjackman">github.com/sjackman</a> | <a href="http://sjackman.ca">sjackman.ca</a></p>
 </section><section id="shaun-jackman" class="slide level2">
 <h1>Shaun Jackman</h1>
-<p><a href="http://bcgsc.ca">Genome Sciences Centre</a>, BC Cancer Agency<br />Vancouver, Canada<br /><a href="http://twitter.com/sjackman">@sjackman</a><br /><a href="https://github.com/sjackman">github.com/sjackman</a><br /><a href="http://sjackman.ca">sjackman.ca</a></p>
+<p><a href="http://bcgsc.ca">Genome Sciences Centre</a>, BC Cancer Agency<br />
+Vancouver, Canada<br />
+<a href="http://twitter.com/sjackman">@sjackman</a><br />
+<a href="https://github.com/sjackman">github.com/sjackman</a><br />
+<a href="http://sjackman.ca">sjackman.ca</a></p>
 <figure>
 <img src="images/sjackman.jpg" />
 </figure>
